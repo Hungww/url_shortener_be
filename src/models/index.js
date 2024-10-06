@@ -5,7 +5,7 @@ import path from "path";
 import { Sequelize } from "sequelize";
 import process from "process";
 import { fileURLToPath } from "url";
-
+import mysql2 from "mysql2";
 // Define __filename and __dirname
 const __filename = fileURLToPath(import.meta.url); // Convert URL to file path
 const __dirname = path.dirname(__filename); // Get the directory name
@@ -22,8 +22,14 @@ const db = {};
 async function initializeDatabase() {
   let sequelize;
   if (config.use_env_variable) {
+    if (config.dialect === "mysql") {
+      config.dialectModule = mysql2;
+    }
     sequelize = new Sequelize(process.env[config.use_env_variable], config);
   } else {
+    if (config.dialect === "mysql") {
+      config.dialectModule = mysql2;
+    }
     sequelize = new Sequelize(
       config.database,
       config.username,
